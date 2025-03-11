@@ -5,10 +5,10 @@ import os
 import re
 
 # Variables
-SCREENSHOTS_PATH = "screenshots"
+SCREENSHOTS_PATH = "./screenshots"
 
 # Reading from hosts file
-with open('hosts.txt') as file:
+with open('./data/hosts.txt') as file:
     websites = file.readlines()
 
 # Creating dataframe object
@@ -64,4 +64,4 @@ df['description'] = description
 df['html'] = html
 
 # Create Excel
-df.to_excel("output.xlsx", sheet_name="HTML")
+df.to_excel("./output/output.xlsx", sheet_name="HTML")
