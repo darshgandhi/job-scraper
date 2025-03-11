@@ -1,4 +1,11 @@
-linkedin.com
-ca.indeed.com
-riotgames.com
-
+https://linkedin.com
+https://ca.indeed.com
+https://riotgames.com
+https://www.jobbank.gc.ca/
+https://www.usajobs.gov/
+https://www.utoronto.ca/careers
+https://hr.harvard.edu/jobs
+https://careers.google.com/
+https://careers.microsoft.com/
+https://www.techcareers.com/
+https://www.healthcarejobsite.com/
