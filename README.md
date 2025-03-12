@@ -1,20 +1,24 @@
-##Job Board Scraper
+# Job Board Scraper
 
-##A full-stack job board application that scrapes job listings from various websites and displays them in a user-friendly interface.
-Tech Stack
+## Tech Stack
 
-    Backend: Python (Playwright)
-    Database: Supabase
-    Frontend: Next.js
+### Backend
+- **Python Playwright** - Used for web scraping job postings from various sources.
 
-##How It Works
+### Database
+- **Supabase** - Serves as the database for storing scraped job listings.
 
-    Scraping: The backend uses Playwright to extract job listings from target websites.
-    Storage: The scraped data is stored in Supabase for easy retrieval.
-    Frontend Display: The Next.js frontend queries the database and displays job listings dynamically.
+### Frontend
+- **Next.js** - Handles the UI and retrieves job data from the backend.
 
-##Features
+## How It Works
 
-    Automated job listing retrieval
-    Database storage for structured job data
-    Web-based frontend for job discovery
+1. **Scraping:** The backend uses Playwright to extract job listings from target websites.
+2. **Storage:** The scraped data is stored in Supabase for easy retrieval.
+3. **Frontend Display:** The Next.js frontend queries the database and displays job listings dynamically.
+
+## Features
+
+- Automated job listing retrieval
+- Database storage for structured job data
+- Web-based frontend for job discovery
