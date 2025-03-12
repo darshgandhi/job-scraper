@@ -92,28 +92,3 @@ with sync_playwright() as p:
 job_df = pd.DataFrame(details)
 job_df.to_excel("./output/output.xlsx", sheet_name="HTML", index=False)
 print(f"Runtime: {time.perf_counter() - start_time:.2f} seconds")
-
-if not job_df.empty:
-    existing_urls = []
-    response = supabase.from_('jobs').select('url').execute()
-    if hasattr(response, 'data'):
-        existing_urls = [job['url'] for job in response.data]
-        print(f"Found {len(existing_urls)} existing job URLs in database")
-    
-    new_jobs_df = job_df[~job_df['url'].isin(existing_urls)]
-    print(f"Found {len(new_jobs_df)} new jobs to insert (out of {len(job_df)} total)")
-    
-    if not new_jobs_df.empty:
-        new_jobs_df['company_id'] = new_jobs_df.get('company_id', None)
-        new_jobs_df['description'] = new_jobs_df.get('description', "N/A")
-        
-        job_records = new_jobs_df.to_dict(orient='records')
-        if job_records:
-            response = supabase.table('jobs').insert(job_records).execute()
-            print(f"Successfully inserted {len(job_records)} new jobs! Status: {response.status_code}")
-        else:
-            print("No new jobs to insert")
-    else:
-        print("All jobs are already in the database")
-else:
-    print("No jobs found to insert into database.")
