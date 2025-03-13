@@ -1,16 +1,20 @@
 {
   "https://www.riotgames.com/en/work-with-us": {
     "wait_for": ".job-list__body.list--unstyled",
-    "row_class": ".job-row.job-row--body",
-    "title_class": ".job-row__col.job-row__col--primary",
-    "type_class": ".job-row__col.job-row__col--secondary",
-    "team_class": ".job-row__col.job-row__col--secondary",
-    "location_class": ".job-row__col.job-row__col--secondary",
+    "job_elements": "li",
+    "title_xpath": "//a/div[@class='job-row__col job-row__col--primary']",
     "type_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][1]",
-    "team_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][2]",
     "location_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][3]",
-    "url_class": "a.job-row__inner.js-job-url",
-    "url_prefix": "https://www.riotgames.com/[lang]/work-with-us/job/[id]",
-    "url_regex": "\\/(?P<lang>\\w+)\\/j\\/(?P<id>\\d+)"
+    "url_xpath": "//a",
+    "pagination_xpath": ""
+  },
+  "https://careers.roblox.com/jobs": {
+    "wait_for": "//rbx-ui-list",
+    "job_elements": "//rbx-ui-search-item",
+    "title_xpath":"//h4",
+    "type_xpath": "//div[@class='caption-container']/caption[1]",
+    "location_xpath": "//div[@class='caption-container']/caption[2]",
+    "url_xpath": "//a",
+    "pagination_xpath": "//li[@class='pagination-next']"
   }
 }
