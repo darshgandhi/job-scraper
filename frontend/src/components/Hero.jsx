@@ -26,14 +26,14 @@ const Hero = () => {
                   <input
                     type="text"
                     placeholder="Job title"
-                    className="text-sm bg-slate-50 w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-500"
+                    className="text-sm bg-slate-50 w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-hidden focus:border-orange-500"
                   />
                 </div>
                 <div className="w-full sm:flex-1">
                   <input
                     type="text"
                     placeholder="Location"
-                    className="text-sm bg-slate-50 w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-500"
+                    className="text-sm bg-slate-50 w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-hidden focus:border-orange-500"
                   />
                 </div>
                 <button className="w-full sm:w-auto bg-blue-600 text-sm text-white px-6 py-2 font-medium hover:bg-red-500 transition-colors whitespace-nowrap cursor-pointer rounded-lg">

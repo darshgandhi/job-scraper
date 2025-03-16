@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "@/components/ui/button";
 
 const JobCard = ({ title, company, url, type, location, salary }) => {
   return (
@@ -19,7 +20,7 @@ const JobCard = ({ title, company, url, type, location, salary }) => {
       </div>
 
       {/* Job Details */}
-      <div className="space-y-2 mb-4 flex-grow">
+      <div className="space-y-2 mb-4 grow">
         {[
           { icon: "schedule", text: type || "Full-time" },
           { icon: "location_on", text: location || "Remote" },
@@ -36,13 +37,8 @@ const JobCard = ({ title, company, url, type, location, salary }) => {
           ))}
       </div>
 
-      <a
-        href={url || "#"}
-        className="block w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded text-center transition-colors text-sm mt-auto"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Apply Now
+      <a href={url || "#"} target="_blank" rel="noopener noreferrer">
+        <Button>Apply Now</Button>
       </a>
     </div>
   );
