@@ -3,7 +3,7 @@
 [![Status](https://img.shields.io/badge/Status-In%20Development-yellow)](https://github.com/darshgandhi/job-scraper/)
 [![GitHub](https://img.shields.io/badge/GitHub-darshgandhi-blue?logo=github)](https://github.com/darshgandhi)
 [![GitHub](https://img.shields.io/badge/GitHub-a25shi-blue?logo=github)](https://github.com/a25shi)
-[![Visit Project Website](https://img.shields.io/badge/Visit%20Website-FF0000?style=flat&logo=worldwide&logoColor=white)](https://job-scraper.pages.dev/)
+[![Visit Project Website](https://img.shields.io/badge/Visit%20Project%20Website-FF0000?style=flat&logo=worldwide&logoColor=white)](https://job-scraper.pages.dev/)
 
 A modern web application that automates the job search process by collecting and organizing listings from multiple sources.
 
