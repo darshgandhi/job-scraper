@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { JobContext } from "@/context/JobContext";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import happyImage from "/happy-1184894.png";
 import Item from "@/components/Item";
