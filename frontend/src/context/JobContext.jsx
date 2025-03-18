@@ -23,7 +23,7 @@ export const JobProvider = ({ children }) => {
     let query = supabase.from("jobs").select("*");
 
     if (searchTerm) {
-      query = query.ilike("title", `%${searchTerm}%`);
+      query = query.ilike("title", `*%${searchTerm}%*`);
     }
 
     if (filters.location) {
