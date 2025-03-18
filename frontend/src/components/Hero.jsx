@@ -1,4 +1,5 @@
 import React from "react";
+import { Outlet, Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -7,7 +8,7 @@ const Hero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 place-items-center gap-12 text-center lg:text-left">
           <div className="relative flex justify-center h-[300px] sm:h-[400px] lg:h-[500px]">
             <img
-              src="happy-1184894.png"
+              src="bwink_msc_07_single_01.jpg"
               alt="Happy person"
               className="w-full h-full max-w-[300px] sm:max-w-[400px] lg:max-w-[500px] object-contain"
             />
@@ -36,9 +37,11 @@ const Hero = () => {
                     className="text-sm bg-slate-50 w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-hidden focus:border-orange-500"
                   />
                 </div>
-                <button className="w-full sm:w-auto bg-blue-600 text-sm text-white px-6 py-2 font-medium hover:bg-red-500 transition-colors whitespace-nowrap cursor-pointer rounded-lg">
-                  Search Jobs
-                </button>
+                <Link to="/jobs">
+                  <button className="w-full sm:w-auto bg-blue-600 text-sm text-white px-6 py-2 font-medium hover:bg-blue-700 duration-300 ease-in-out hover:-translate-y-0.5 shadow-md hover:shadow-lg transition-colors whitespace-nowrap cursor-pointer rounded-lg">
+                    Search Jobs
+                  </button>
+                </Link>
               </div>
             </div>
           </div>

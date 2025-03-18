@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from "react";
-import Card from "./Card";
 import { supabase } from "../lib/supabase";
+import { Button } from "@/components/ui/button";
+import {
+  ExternalLink,
+  MapPin,
+  BriefcaseBusiness,
+  CircleDollarSign,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const List = () => {
   const [data, setData] = useState([]);
@@ -11,6 +25,7 @@ const List = () => {
 
   async function getResults() {
     const { data, error } = await supabase.from("jobs").select("*");
+    await new Promise((resolve) => setTimeout(resolve, 500));
     if (error) {
       console.error("Error fetching data:", error);
     } else {
@@ -20,21 +35,51 @@ const List = () => {
   }
 
   return (
-    <section className="flex justify-center items-center overflow-y-auto pt-16 sm:pt-12 md:pt-8 pb-16">
-      <div className="w-full max-w-7xl px-4 flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {data.length > 0 ? (
-            data.map((job) => (
-              <div className="w-full" key={job.id}>
-                <Card {...job} />
+    <section className="flex justify-center items-center min-h-screen">
+      <div className="overflow-hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        {data.length > 0 ? (
+          data.map((job) => (
+            <Card
+              key={job.id}
+              className="flex flex-col justify-around relative transition-transform duration-300 ease-in-out hover:-translate-y-2 shadow-md hover:shadow-lg"
+            >
+              <CardHeader>
+                <CardTitle>{job.title}</CardTitle>
+                <CardDescription>{job.job_type || "Remote"}</CardDescription>
+              </CardHeader>
+              <div className="flex flex-col gap-5">
+                <CardContent className="flex flex-col gap-2 text-sm">
+                  <a className="flex gap-2">
+                    <MapPin />
+                    {job.location || "Unknown"}
+                  </a>
+                  <a className="flex gap-2">
+                    <BriefcaseBusiness />
+                    {job.type || "Full-time"}
+                  </a>
+                  {job.salary && (
+                    <a className="flex gap-2">
+                      <CircleDollarSign />
+                      {job.salary}
+                    </a>
+                  )}
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <a href={job.url || "#"} target="_blank">
+                    <Button>
+                      Apply
+                      <ExternalLink />
+                    </Button>
+                  </a>
+                </CardFooter>
               </div>
-            ))
-          ) : (
-            <p className="col-span-full text-center py-10 text-gray-500">
-              No jobs found
-            </p>
-          )}
-        </div>
+            </Card>
+          ))
+        ) : (
+          <div className="col-span-full flex justify-center items-center w-full h-full">
+            <div className="w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>
+          </div>
+        )}
       </div>
     </section>
   );
