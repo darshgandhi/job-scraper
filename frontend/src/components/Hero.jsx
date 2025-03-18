@@ -1,16 +1,19 @@
 import React from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import Particles from "react-tsparticles";
+import ParticleConfig from "../config/particle-config";
 
 const Hero = () => {
   return (
-    <section className="mb-1">
+    <section className="mb-1 overflow-hidden">
+      <Particles params={ParticleConfig} className="absolute inset-0" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 place-items-center gap-12 text-center lg:text-left">
-          <div className="relative flex justify-center h-[300px] sm:h-[400px] lg:h-[500px]">
+          <div className=" relative flex justify-center h-[300px] sm:h-[400px] lg:h-[500px]">
             <img
               src="bwink_msc_07_single_01.jpg"
               alt="Happy person"
-              className="w-full h-full max-w-[300px] sm:max-w-[400px] lg:max-w-[500px] object-contain"
+              className="opacity-90 w-full h-full max-w-[300px] sm:max-w-[400px] lg:max-w-[500px] object-contain"
             />
           </div>
           <div className="relative max-w-[500px] mx-auto">
@@ -21,29 +24,11 @@ const Hero = () => {
               Connect with top companies and discover opportunities that match
               your skills and aspirations.
             </p>
-            <div className="bg-slate-200 rounded-lg shadow-lg py-4 px-3">
-              <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-                <div className="w-full sm:flex-1">
-                  <input
-                    type="text"
-                    placeholder="Job title"
-                    className="text-sm bg-slate-50 w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-hidden focus:border-orange-500"
-                  />
-                </div>
-                <div className="w-full sm:flex-1">
-                  <input
-                    type="text"
-                    placeholder="Location"
-                    className="text-sm bg-slate-50 w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-hidden focus:border-orange-500"
-                  />
-                </div>
-                <Link to="/jobs">
-                  <button className="w-full sm:w-auto bg-blue-600 text-sm text-white px-6 py-2 font-medium hover:bg-blue-700 duration-300 ease-in-out hover:-translate-y-0.5 shadow-md hover:shadow-lg transition-colors whitespace-nowrap cursor-pointer rounded-lg">
-                    Search Jobs
-                  </button>
-                </Link>
-              </div>
-            </div>
+            <Link to="/jobs">
+              <button className="shadow-xl cursor-pointer group group-hover:before:duration-500 group-hover:after:duration-500 after:duration-500 hover:border-black hover:before:[box-shadow:_20px_20px_20px_30px_#2196f3] duration-500 before:duration-500 hover:duration-500 underline underline-offset-2 hover:after:-right-8 hover:before:right-12 hover:before:-bottom-8 hover:before:blur hover:underline hover:underline-offset-4 origin-left hover:decoration-2 hover:text-blue-300 relative bg-neutral-800 h-16 w-64 border-2 border-black text-left p-3 text-gray-50 text-base font-bold rounded-lg overflow-hidden before:absolute before:w-12 before:h-12 before:content[''] before:right-1 before:top-1 before:z-10 before:bg-blue-500 before:rounded-full before:blur-lg after:absolute after:z-10 after:w-20 after:h-20 after:content[''] after:bg-blue-300 after:right-8 after:top-3 after:rounded-full after:blur-lg">
+                Explore Jobs
+              </button>
+            </Link>
           </div>
         </div>
       </div>
