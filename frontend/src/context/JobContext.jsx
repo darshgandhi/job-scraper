@@ -54,22 +54,18 @@ export const JobProvider = ({ children }) => {
       }
 
       if (filters.location) {
-        filtered = filtered.filter((job) =>
-          job.location?.toLowerCase().includes(filters.location.toLowerCase())
-        );
+        filtered = filtered.filter((job) => {
+          if (!job.location) return false;
+          return job.location
+            ?.toLowerCase()
+            .includes(filters.location.toLowerCase());
+        });
       }
 
       if (filters.type && filters.type !== "all") {
         filtered = filtered.filter((job) => {
-          if (!job.location) return false;
-          job.type?.toLowerCase().includes(filters.type.toLowerCase());
+          return job.type.toLowerCase().includes(filters.type.toLowerCase());
         });
-      }
-
-      if (filters.salary) {
-        filtered = filtered.filter((job) =>
-          job.salary?.toLowerCase().includes(filters.salary.toLowerCase())
-        );
       }
 
       setFilteredData(filtered);
