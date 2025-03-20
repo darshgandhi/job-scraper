@@ -14,6 +14,7 @@ import json
 load_dotenv()
 supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 SCREENSHOTS_PATH = "./screenshots"
+ROW_LIMIT = 500
 
 with open('./data/hosts.txt') as file:
     websites = list(filter(lambda line: not line.lstrip().startswith("*") and line.strip(), map(str.strip, file)))
@@ -44,17 +45,48 @@ async def scrape_page(job_elements, site, site_details):
         # Title
         if selectors[site].get('title_xpath'):
             title_element = await job.query_selector(selectors[site]['title_xpath'])
-            job_details["title"] = await title_element.inner_text() if title_element else "N/A"
+            job_details["title"] = await title_element.inner_text() if title_element else None
+            title_text = await title_element.inner_text() if title_element else ""
+            if re.search(r"part[\s-]*time", title_text.lower()):
+                job_details["type"] = "Part-Time"
+            elif "internship" in title_text.lower():
+                job_details["type"] = "Internship"
+            elif "contract" in title_text.lower():
+                job_details["type"] = "Contract"
 
-        # Job Type
+        # Job Type (Part-time, Full-time, etc.)
         if selectors[site].get('type_xpath'):
             type_element = await job.query_selector(selectors[site]['type_xpath'])
-            job_details["job_type"] = await type_element.inner_text() if type_element else "N/A"
+            job_details["type"] = await type_element.inner_text() if type_element else None
 
         # Location
         if selectors[site].get('location_xpath'):
             location_element = await job.query_selector(selectors[site]['location_xpath'])
-            job_details["location"] = await location_element.inner_text() if location_element else "N/A"
+            location = await location_element.inner_text() if location_element else None
+            job_details["location"] = location.replace("Location", "") if location else None
+
+        # company Name Xpath
+        if selectors[site].get('company_xpath'):
+            title_element = await job.query_selector(selectors[site]['company_xpath'])
+            job_details["company_name"] = await title_element.inner_text() if title_element else None
+        elif selectors[site].get('company_name'):
+            job_details["company_name"] = selectors[site].get('company_name')
+
+        # Department
+        if selectors[site].get('department_xpath'):
+            type_element = await job.query_selector(selectors[site]['department_xpath'])
+            job_details["department"] = await type_element.inner_text() if type_element else None
+
+        # Date Posted
+        if selectors[site].get('date_xpath'):
+            location_element = await job.query_selector(selectors[site]['date_xpath'])
+            job_details["posted_at"] = await location_element.inner_text() if location_element else None
+
+        # Salary
+        if selectors[site].get('salary_xpath'):
+            location_element = await job.query_selector(selectors[site]['salary_xpath'])
+            salary = await location_element.inner_text() if location_element else None
+            job_details["salary"] = salary.replace('Salary: ','') if salary else None
 
         site_details.append(job_details)
 
@@ -70,9 +102,17 @@ async def scrape_site(site, browser):
         page = await context.new_page()
 
         await page.goto(site, wait_until="domcontentloaded")
-        await page.wait_for_load_state("networkidle")
+        await page.wait_for_load_state("domcontentloaded")
+
         # await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
         await page.screenshot(path=os.path.join(SCREENSHOTS_PATH, f"{re.sub(r'[\/:*?"<>|]', '_', site)}.png"))
+
+        '''if selectors[site]['filter_button'] != "":
+            if page.query_selector(selectors[site]['filter_button']):
+                page.click(selectors[site]['filter_button'])
+                page.wait_for_load_state("networkidle")
+            else:
+                print(f"Filter button not found for {site}, skipping")'''
 
         site_details = []
         while True:
@@ -82,6 +122,13 @@ async def scrape_site(site, browser):
 
             # scrape page and then check for next page
             await scrape_page(job_elements, site, site_details)
+
+            site_details = list({job['url']: job for job in site_details if job.get('url')}.values())
+
+            # Row Limit for Site
+            if len(site_details) >= ROW_LIMIT:
+                print("Reached row limit")
+                break
 
             # no pagination xpath, break
             if not selectors[site].get('pagination_xpath'):
@@ -121,21 +168,28 @@ async def main():
     if not job_df.empty:
         existing_urls = []
         response = supabase.table('jobs').select('url').execute()
-        if hasattr(response, 'data'):
+    
+        # Checking and printing existing URLs in database
+        if hasattr(response, 'data') and response.data:
             existing_urls = [job['url'] for job in response.data]
             print(f"Found {len(existing_urls)} existing job URLs in database")
+            duplicate_jobs = job_df[job_df['url'].isin(existing_urls)]
+            if not duplicate_jobs.empty:
+                print(f"Duplicate URLs found:\n{duplicate_jobs['url'].tolist()}")
 
-        print(job_df)
+        # Inserting new jobs into database
         new_jobs_df = job_df[~job_df['url'].isin(existing_urls)]
         print(f"Found {len(new_jobs_df)} new jobs to insert (out of {len(job_df)} total)")
 
         if not new_jobs_df.empty:
-            new_jobs_df['company_id'] = new_jobs_df.get('company_id', None)
-            new_jobs_df['description'] = new_jobs_df.get('description', "N/A")
+            new_jobs_df = new_jobs_df.map(lambda x: None if pd.isnull(x) else x)
+
+            # Deduplicate new_jobs_df based on 'url' before inserting
+            new_jobs_df = new_jobs_df.drop_duplicates(subset=['url'], keep='last')
 
             job_records = new_jobs_df.to_dict(orient='records')
             if job_records:
-                response = supabase.table('jobs').insert(job_records).execute()
+                response = supabase.table('jobs').upsert(job_records, on_conflict=['url']).execute()
                 print(f"Successfully inserted {len(job_records)} new jobs!")
             else:
                 print("No new jobs to insert")

@@ -3,18 +3,31 @@
     "wait_for": ".job-list__body.list--unstyled",
     "job_elements": "li",
     "title_xpath": "//a/div[@class='job-row__col job-row__col--primary']",
-    "type_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][1]",
+    "department_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][1]",
     "location_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][3]",
     "url_xpath": "//a",
-    "pagination_xpath": ""
+    "company_name": "Riot Games, Inc."
   },
   "https://careers.roblox.com/jobs": {
     "wait_for": "//rbx-ui-list",
     "job_elements": "//rbx-ui-search-item",
-    "title_xpath":"//h4",
-    "type_xpath": "//div[@class='caption-container']/caption[1]",
-    "location_xpath": "//div[@class='caption-container']/caption[2]",
+    "title_xpath": "//h4",
+    "department_xpath": "//div[@class='caption-container']/caption[2]",
+    "location_xpath": "//div[@class='caption-container']/caption[1]",
     "url_xpath": "//a",
-    "pagination_xpath": "//li[@class='pagination-next']"
+    "pagination_xpath": "//li[@class='pagination-next']",
+    "company_name": "Roblox Corporation"
+  },
+  "https://www.jobbank.gc.ca/jobsearch/": {
+    "wait_for": ".results-jobs",
+    "filter_button": "//div/div/input[@value='2']",
+    "job_elements": "//article",
+    "company_xpath": "//a/ul/li[@class='business']",
+    "date_xpath": "//a/ul/li[@class='date']",
+    "title_xpath": "//a/h3/span[@class='noctitle']",
+    "salary_xpath": "//a/ul/li[@class='salary']",
+    "location_xpath": "//a/ul/li[@class='location']",
+    "url_xpath": "//a",
+    "pagination_xpath": "//div/button[@id='moreresultbutton']"
   }
 }

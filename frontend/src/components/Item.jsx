@@ -13,6 +13,7 @@ import {
   BriefcaseBusiness,
   CircleDollarSign,
   Users,
+  Calendar,
 } from "lucide-react";
 
 const Item = ({
@@ -20,11 +21,12 @@ const Item = ({
   title,
   company,
   location,
-  job_type,
   type,
+  department,
   salary,
   description,
   url,
+  posted_at,
 }) => {
   return (
     <Card
@@ -49,10 +51,12 @@ const Item = ({
           <span>{location || "Location not specified"}</span>
         </div>
 
-        <div className="flex items-center gap-2 text-gray-600">
-          <Users className="h-4 w-4 flex-shrink-0" />
-          <span>{job_type || "Group not specified"}</span>
-        </div>
+        {department && (
+          <div className="flex items-center gap-2 text-gray-600">
+            <Users className="h-4 w-4 flex-shrink-0" />
+            <span>{department}</span>
+          </div>
+        )}
 
         <div className="flex items-center gap-2 text-gray-600">
           <BriefcaseBusiness className="h-4 w-4 flex-shrink-0" />
@@ -61,8 +65,17 @@ const Item = ({
 
         <div className="flex items-center gap-2 text-gray-600">
           <CircleDollarSign className="h-4 w-4 flex-shrink-0" />
-          <span>{salary || "Salary not disclosed"}</span>
+          <span className="line-clamp-1">
+            {salary || "Salary not disclosed"}
+          </span>
         </div>
+
+        {posted_at && (
+          <div className="flex items-center gap-2 text-gray-600">
+            <Calendar className="h-4 w-4 flex-shrink-0" />
+            <span>{posted_at}</span>
+          </div>
+        )}
       </CardContent>
 
       <CardFooter className="pt-2">

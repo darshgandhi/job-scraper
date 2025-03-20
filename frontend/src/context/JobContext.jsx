@@ -11,51 +11,72 @@ export const JobProvider = ({ children }) => {
     type: "",
   });
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const displayedJobs = data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-  const getResults = async () => {
-    setLoading(true);
-    let query = supabase.from("jobs").select("*");
-
-    if (searchTerm) {
-      query = query.ilike("title", `*%${searchTerm}%*`);
-    }
-
-    if (filters.location) {
-      query = query.ilike("location", `%${filters.location}%`);
-    }
-
-    if (filters.type && filters.type !== "all") {
-      query = query.ilike("type", `%${filters.type}%`);
-    }
-
-    if (filters.salary) {
-      query = query.ilike("salary", `%${filters.salary}%`);
-    }
-
-    if (!searchTerm && !filters.location && !filters.type) {
-      query = query.limit(400);
-    }
-
-    const { data, error } = await query;
-    await new Promise((resolve) => setTimeout(resolve, 250));
-
-    if (error) {
-      console.error("Error fetching data:", error);
-    } else {
-      setData(data);
-    }
-    setLoading(false);
-  };
+  const displayedJobs = filteredData.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
 
   useEffect(() => {
-    getResults();
-  }, [searchTerm, filters]);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.from("jobs").select("*");
+        if (error) {
+          throw error;
+        }
+        data.sort(() => Math.random() - 0.5);
+        setData(data);
+        setFilteredData(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const filterResults = () => {
+      let filtered = data;
+
+      if (searchTerm) {
+        filtered = filtered.filter((job) =>
+          job.title?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+
+      if (filters.location) {
+        filtered = filtered.filter((job) =>
+          job.location?.toLowerCase().includes(filters.location.toLowerCase())
+        );
+      }
+
+      if (filters.type && filters.type !== "all") {
+        filtered = filtered.filter((job) => {
+          if (!job.location) return false;
+          job.type?.toLowerCase().includes(filters.type.toLowerCase());
+        });
+      }
+
+      if (filters.salary) {
+        filtered = filtered.filter((job) =>
+          job.salary?.toLowerCase().includes(filters.salary.toLowerCase())
+        );
+      }
+
+      setFilteredData(filtered);
+    };
+
+    filterResults();
+  }, [searchTerm, filters, data]);
 
   return (
     <JobContext.Provider
@@ -68,11 +89,11 @@ export const JobProvider = ({ children }) => {
         setData,
         loading,
         setLoading,
-        getResults,
         totalPages,
         displayedJobs,
         setCurrentPage,
         currentPage,
+        filteredData,
       }}
     >
       {children}

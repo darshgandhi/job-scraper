@@ -8,7 +8,7 @@ import FilterSearch from "@/components/FilterSearch";
 
 const Jobs = () => {
   const {
-    data,
+    filteredData,
     loading,
     totalPages,
     displayedJobs,
@@ -55,7 +55,7 @@ const Jobs = () => {
                 Page {currentPage} of {totalPages}
               </span>
               <span className="text-xs text-gray-500">
-                Total Results: {data.length}
+                Total Results: {filteredData.length}
               </span>
             </div>
             <div className="flex gap-2">
@@ -96,13 +96,14 @@ const Jobs = () => {
                   key={job.id}
                   id={job.id}
                   title={job.title}
-                  company={job.company}
+                  company={job.company_name}
                   location={job.location}
-                  job_type={job.job_type}
+                  department={job.department}
                   type={job.type}
                   salary={job.salary}
                   description={job.description}
                   url={job.url}
+                  posted_at={job.posted_at}
                 />
               ))}
             </div>
@@ -150,7 +151,7 @@ const Jobs = () => {
                 Page {currentPage} of {totalPages}
               </span>
               <span className="text-xs text-gray-500">
-                Total Results: {data.length}
+                Total Results: {filteredData.length}
               </span>
             </div>
             <div className="flex gap-2">
