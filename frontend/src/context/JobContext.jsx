@@ -48,8 +48,11 @@ export const JobProvider = ({ children }) => {
       let filtered = data;
 
       if (searchTerm) {
-        filtered = filtered.filter((job) =>
-          job.title?.toLowerCase().includes(searchTerm.toLowerCase())
+        filtered = filtered.filter(
+          (job) =>
+            job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            job.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            job.company_name?.toLowerCase().includes(searchTerm.toLowerCase())
         );
       }
 
