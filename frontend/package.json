@@ -22,7 +22,8 @@
     "react-router-dom": "^7.3.0",
     "react-tsparticles": "^2.12.2",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "tsparticles": "^2.11.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

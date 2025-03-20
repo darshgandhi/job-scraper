@@ -17,7 +17,7 @@ const Jobs = () => {
   } = useContext(JobContext);
 
   return (
-    <div className="bg-white w-full">
+    <div className="w-full bg-white">
       {/* Main content container */}
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex items-center mb-6">

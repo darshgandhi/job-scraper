@@ -1,17 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Particles from "react-tsparticles";
-import ParticleConfig from "../config/particle-config";
 
 const Hero = () => {
   return (
     <section className="mb-1 overflow-hidden">
-      <Particles params={ParticleConfig} className="absolute inset-0" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 place-items-center gap-12 text-center lg:text-left">
           <div className=" relative flex justify-center h-[300px] sm:h-[400px] lg:h-[500px]">
             <img
-              src="bwink_msc_07_single_01.jpg"
+              src="gradient-career-cushioning-illustration.png"
               alt="Happy person"
               className="opacity-90 w-full h-full max-w-[300px] sm:max-w-[400px] lg:max-w-[500px] object-contain"
             />
