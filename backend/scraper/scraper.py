@@ -53,6 +53,8 @@ async def scrape_page(job_elements, site, site_details):
                 job_details["type"] = "Internship"
             elif "contract" in title_text.lower():
                 job_details["type"] = "Contract"
+            else:
+                job_details["type"] = "Full-Time"
 
         # Job Type (Part-time, Full-time, etc.)
         if selectors[site].get('type_xpath'):
