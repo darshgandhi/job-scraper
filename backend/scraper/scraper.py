@@ -59,7 +59,15 @@ async def scrape_page(job_elements, site, site_details):
         # Job Type (Part-time, Full-time, etc.)
         if selectors[site].get('type_xpath'):
             type_element = await job.query_selector(selectors[site]['type_xpath'])
-            job_details["type"] = await type_element.inner_text() if type_element else None
+            job_type = await type_element.inner_text() if type_element else None
+            if re.search(r"part[\s-]*time", job_type.lower()):
+                job_details["type"] = "Part-Time"
+            elif "internship" in job_type.lower():
+                job_details["type"] = "Internship"
+            elif "contract" in job_type.lower():
+                job_details["type"] = "Contract"
+            else:
+                job_details["type"] = "Full-Time"
 
         # Location
         if selectors[site].get('location_xpath'):
@@ -124,9 +132,7 @@ async def scrape_site(site, browser):
 
             # scrape page and then check for next page
             await scrape_page(job_elements, site, site_details)
-
             site_details = list({job['url']: job for job in site_details if job.get('url')}.values())
-
             # Row Limit for Site
             if len(site_details) >= ROW_LIMIT:
                 print("Reached row limit")

@@ -29,5 +29,17 @@
     "location_xpath": "//a/ul/li[@class='location']",
     "url_xpath": "//a",
     "pagination_xpath": "//div/button[@id='moreresultbutton']"
+  },
+  "https://www.usajobs.gov/search/results/?l=&rmi=false&p=1": {
+    "wait_for": ".usajobs-search-results.no-params",
+    "job_elements": "//div[@class='usajobs-search-result--core']",
+    "title_xpath": "//h2/a",
+    "department_xpath": "//div/div/div[@class='usajobs-search-result--core__department']",
+    "location_xpath": "//div/div/div[@class='usajobs-search-result--core__location']",
+    "salary_xpath": "//div/div/ul/li[@class='usajobs-search-result--core__item']",
+    "type_xpath": "//div/div/ul/li[@class='usajobs-search-result--core__item usajobs-search-result--core__appt-type']",
+    "url_xpath": "//h2/a",
+    "company_name": "US Government (usajobs.gov)",
+    "pagination_xpath": "//a[@class='usajobs-search-pagination__next-page']"
   }
 }

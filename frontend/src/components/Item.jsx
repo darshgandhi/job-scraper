@@ -48,19 +48,23 @@ const Item = ({
       <CardContent className="flex flex-col gap-3 text-sm flex-grow">
         <div className="flex items-center gap-2 text-gray-600">
           <MapPin className="h-4 w-4 flex-shrink-0" />
-          <span>{location || "Location not specified"}</span>
+          <span className="line-clamp-1">
+            {location || "Location not specified"}
+          </span>
         </div>
 
         {department && (
           <div className="flex items-center gap-2 text-gray-600">
             <Users className="h-4 w-4 flex-shrink-0" />
-            <span>{department}</span>
+            <span className="line-clamp-1">{department}</span>
           </div>
         )}
 
         <div className="flex items-center gap-2 text-gray-600">
           <BriefcaseBusiness className="h-4 w-4 flex-shrink-0" />
-          <span>{type || "Job Type not specified"}</span>
+          <span className="line-clamp-1">
+            {type || "Job Type not specified"}
+          </span>
         </div>
 
         <div className="flex items-center gap-2 text-gray-600">
@@ -73,7 +77,7 @@ const Item = ({
         {posted_at && (
           <div className="flex items-center gap-2 text-gray-600">
             <Calendar className="h-4 w-4 flex-shrink-0" />
-            <span>{posted_at}</span>
+            <span className="line-clamp-1">{posted_at}</span>
           </div>
         )}
       </CardContent>
