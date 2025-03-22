@@ -1,10 +1,7 @@
 import asyncio
-from asyncio import timeout
 from playwright.async_api import async_playwright
-from undetected_playwright import Malenia
 from supabase import create_client, Client
 from dotenv import load_dotenv
-from urllib.parse import urlparse
 import pandas as pd
 import os
 import re
@@ -29,19 +26,11 @@ details = []
 start_time = time.perf_counter()
 
 
-async def scrape_page(job_elements, site, site_details):
+async def scrape_page(page, job_elements, site, site_details):
+    n = 0
+    start_time_page = time.perf_counter()
     for job in job_elements:
         job_details = {"source": site}
-
-        # URL
-        if selectors[site].get('url_xpath'):
-            job_url_element = await job.query_selector(selectors[site]['url_xpath'])
-            if job_url_element:
-                job_href = await job_url_element.get_attribute("href")
-                job_base_url = urlparse(site)
-                job_url = job_base_url.scheme + "://" + job_base_url.netloc + job_href
-                job_details["url"] = job_url
-
         # Title
         if selectors[site].get('title_xpath'):
             title_element = await job.query_selector(selectors[site]['title_xpath'])
@@ -59,15 +48,7 @@ async def scrape_page(job_elements, site, site_details):
         # Job Type (Part-time, Full-time, etc.)
         if selectors[site].get('type_xpath'):
             type_element = await job.query_selector(selectors[site]['type_xpath'])
-            job_type = await type_element.inner_text() if type_element else None
-            if re.search(r"part[\s-]*time", job_type.lower()):
-                job_details["type"] = "Part-Time"
-            elif "internship" in job_type.lower():
-                job_details["type"] = "Internship"
-            elif "contract" in job_type.lower():
-                job_details["type"] = "Contract"
-            else:
-                job_details["type"] = "Full-Time"
+            job_details["type"] = await type_element.inner_text() if type_element else None
 
         # Location
         if selectors[site].get('location_xpath'):
@@ -96,9 +77,29 @@ async def scrape_page(job_elements, site, site_details):
         if selectors[site].get('salary_xpath'):
             location_element = await job.query_selector(selectors[site]['salary_xpath'])
             salary = await location_element.inner_text() if location_element else None
-            job_details["salary"] = salary.replace('Salary: ','') if salary else None
+            job_details["salary"] = salary.replace('Salary: ', '') if salary else None
 
+        # URL
+        if selectors[site].get('url_xpath'):
+            # Select job element url and click
+            temp_loc = page.locator(selectors[site]['url_xpath']).nth(n)
+
+            # Workaround, see https://github.com/microsoft/playwright/issues/21172
+            await temp_loc.dispatch_event('click')
+
+            # Find the description
+            await page.locator(selectors[site]['description_xpath']).wait_for()
+            description = await page.locator(selectors[site]['description_xpath']).inner_text()
+
+            # Store
+            job_details["url"] = page.url
+            job_details["description"] = description
+            await page.go_back()
+
+        n += 1
         site_details.append(job_details)
+
+    print(f"finished scraping page: {page.url}, runtime: {time.perf_counter() - start_time_page} seconds")
 
 
 async def scrape_site(site, browser):
@@ -108,13 +109,11 @@ async def scrape_site(site, browser):
             return []
 
         context = await browser.new_context(locale="en-US")
-        await Malenia.apply_stealth(context)
         page = await context.new_page()
 
         await page.goto(site, wait_until="domcontentloaded")
-        await page.wait_for_load_state("domcontentloaded")
 
-        # await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
         await page.screenshot(path=os.path.join(SCREENSHOTS_PATH, f"{re.sub(r'[\/:*?"<>|]', '_', site)}.png"))
 
         '''if selectors[site]['filter_button'] != "":
@@ -127,11 +126,16 @@ async def scrape_site(site, browser):
         site_details = []
         while True:
             # Get job list elements
-            job_list = await page.wait_for_selector(selectors[site]['wait_for'], timeout=100000, state='visible')
+            job_list = await page.wait_for_selector(selectors[site]['wait_for'], timeout=10000)
+
+            # Wait for job elements to become available, compromise
+            await page.locator(selectors[site]['job_elements']).nth(0).wait_for()
             job_elements = await job_list.query_selector_all(selectors[site]['job_elements'])
 
             # scrape page and then check for next page
-            await scrape_page(job_elements, site, site_details)
+            await scrape_page(page, job_elements, site, site_details)
+
+
             site_details = list({job['url']: job for job in site_details if job.get('url')}.values())
             # Row Limit for Site
             if len(site_details) >= ROW_LIMIT:
@@ -146,10 +150,13 @@ async def scrape_site(site, browser):
 
             # no next pagination element in document, break
             if not pagination:
+                print("BREAKING")
                 break
 
             # click to next page
             await pagination.click()
+
+
 
         await context.close()
         return site_details
@@ -176,7 +183,7 @@ async def main():
     if not job_df.empty:
         existing_urls = []
         response = supabase.table('jobs').select('url').execute()
-    
+
         # Checking and printing existing URLs in database
         if hasattr(response, 'data') and response.data:
             existing_urls = [job['url'] for job in response.data]
