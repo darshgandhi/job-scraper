@@ -6,16 +6,17 @@
     "title_xpath": "//a/div[@class='job-row__col job-row__col--primary']",
     "department_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][1]",
     "location_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][3]",
-    "url_xpath": "//a"
+    "url_xpath": "//a",
+    "description_xpath": "//div[contains(@class, 'job-description')]//p[1]"
   },
   "https://careers.roblox.com/jobs": {
     "company_name": "Roblox Corporation",
     "wait_for": "//rbx-ui-list",
     "job_elements": "//rbx-ui-search-item",
-    "title_xpath":"//h4",
+    "title_xpath": "//h4",
     "department_xpath": "//div[@class='caption-container']/caption[2]",
     "location_xpath": "//div[@class='caption-container']/caption[1]",
-    "url_xpath": "//rbx-ui-search-item/rbx-ui-link/a",
+    "url_xpath": "//rbx-ui-link/a",
     "pagination_xpath": "//li[@class='pagination-next']",
     "description_xpath": "//rbx-ui-section[contains(@class,'job-description')]//rbx-ui-text-block"
   },
@@ -24,7 +25,7 @@
     "company_name": "Google",
     "wait_for": "//main",
     "job_elements": "//div[@class='sMn82b']",
-    "title_xpath":"//h3[@class='QJPWVe']",
+    "title_xpath": "//h3[@class='QJPWVe']",
     "type_xpath": "null",
     "location_xpath": "//div[@class='wVoYLb']//span[@class='r0wTof']",
     "url_xpath": "//a[@class='WpHeLc VfPpkd-mRLv6 VfPpkd-RLmnJb']",

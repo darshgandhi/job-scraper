@@ -3,6 +3,7 @@ from playwright.async_api import async_playwright
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import pandas as pd
+from urllib.parse import urlparse
 import os
 import re
 import time
@@ -31,70 +32,81 @@ async def scrape_page(page, job_elements, site, site_details):
     start_time_page = time.perf_counter()
     for job in job_elements:
         job_details = {"source": site}
-        # Title
-        if selectors[site].get('title_xpath'):
-            title_element = await job.query_selector(selectors[site]['title_xpath'])
-            job_details["title"] = await title_element.inner_text() if title_element else None
-            title_text = await title_element.inner_text() if title_element else ""
-            if re.search(r"part[\s-]*time", title_text.lower()):
-                job_details["type"] = "Part-Time"
-            elif "internship" in title_text.lower():
-                job_details["type"] = "Internship"
-            elif "contract" in title_text.lower():
-                job_details["type"] = "Contract"
-            else:
-                job_details["type"] = "Full-Time"
+        try:
+            # Title
+            if selectors[site].get('title_xpath'):
+                title_element = await job.query_selector(selectors[site]['title_xpath'])
+                job_details["title"] = await title_element.inner_text() if title_element else None
+                title_text = await title_element.inner_text() if title_element else ""
+                if re.search(r"part[\s-]*time", title_text.lower()):
+                    job_details["type"] = "Part-Time"
+                elif "internship" in title_text.lower():
+                    job_details["type"] = "Internship"
+                elif "contract" in title_text.lower():
+                    job_details["type"] = "Contract"
+                else:
+                    job_details["type"] = "Full-Time"
 
-        # Job Type (Part-time, Full-time, etc.)
-        if selectors[site].get('type_xpath'):
-            type_element = await job.query_selector(selectors[site]['type_xpath'])
-            job_details["type"] = await type_element.inner_text() if type_element else None
+            # Job Type (Part-time, Full-time, etc.)
+            if selectors[site].get('type_xpath'):
+                type_element = await job.query_selector(selectors[site]['type_xpath'])
+                job_details["type"] = await type_element.inner_text() if type_element else None
 
-        # Location
-        if selectors[site].get('location_xpath'):
-            location_element = await job.query_selector(selectors[site]['location_xpath'])
-            location = await location_element.inner_text() if location_element else None
-            job_details["location"] = location.replace("Location", "") if location else None
+            # Location
+            if selectors[site].get('location_xpath'):
+                location_element = await job.query_selector(selectors[site]['location_xpath'])
+                location = await location_element.inner_text() if location_element else None
+                job_details["location"] = location.replace("Location", "") if location else None
 
-        # company Name Xpath
-        if selectors[site].get('company_xpath'):
-            title_element = await job.query_selector(selectors[site]['company_xpath'])
-            job_details["company_name"] = await title_element.inner_text() if title_element else None
-        elif selectors[site].get('company_name'):
-            job_details["company_name"] = selectors[site].get('company_name')
+            # Company Name
+            if selectors[site].get('company_xpath'):
+                company_element = await job.query_selector(selectors[site]['company_xpath'])
+                job_details["company_name"] = await company_element.inner_text() if company_element else None
+            elif selectors[site].get('company_name'):
+                job_details["company_name"] = selectors[site].get('company_name')
 
-        # Department
-        if selectors[site].get('department_xpath'):
-            type_element = await job.query_selector(selectors[site]['department_xpath'])
-            job_details["department"] = await type_element.inner_text() if type_element else None
+            # Department
+            if selectors[site].get('department_xpath'):
+                department_element = await job.query_selector(selectors[site]['department_xpath'])
+                job_details["department"] = await department_element.inner_text() if department_element else None
 
-        # Date Posted
-        if selectors[site].get('date_xpath'):
-            location_element = await job.query_selector(selectors[site]['date_xpath'])
-            job_details["posted_at"] = await location_element.inner_text() if location_element else None
+            # Date Posted
+            if selectors[site].get('date_xpath'):
+                date_element = await job.query_selector(selectors[site]['date_xpath'])
+                job_details["posted_at"] = await date_element.inner_text() if date_element else None
 
-        # Salary
-        if selectors[site].get('salary_xpath'):
-            location_element = await job.query_selector(selectors[site]['salary_xpath'])
-            salary = await location_element.inner_text() if location_element else None
-            job_details["salary"] = salary.replace('Salary: ', '') if salary else None
+            # Salary
+            if selectors[site].get('salary_xpath'):
+                salary_element = await job.query_selector(selectors[site]['salary_xpath'])
+                salary = await salary_element.inner_text() if salary_element else None
+                job_details["salary"] = salary.replace('Salary: ', '') if salary else None
 
-        # URL
-        if selectors[site].get('url_xpath'):
-            # Select job element url and click
-            temp_loc = page.locator(selectors[site]['url_xpath']).nth(n)
+            # URL
+            if selectors[site].get('url_xpath'):
+                job_url_element = await job.query_selector(selectors[site]['url_xpath'])
+                job_href = await job_url_element.get_attribute("href")
+                job_base_url = urlparse(site)
+                job_url = job_base_url.scheme + "://" + job_base_url.netloc + job_href
+                job_details["url"] = job_url
 
-            # Workaround, see https://github.com/microsoft/playwright/issues/21172
-            await temp_loc.dispatch_event('click')
+                if job_url:
+                    new_page = await page.context.new_page()
+                    await new_page.goto(job_url, wait_until="domcontentloaded")
 
-            # Find the description
-            await page.locator(selectors[site]['description_xpath']).wait_for()
-            description = await page.locator(selectors[site]['description_xpath']).inner_text()
+                    # Find the description
+                    await new_page.locator(selectors[site]['description_xpath']).wait_for()
+                    description = await new_page.locator(selectors[site]['description_xpath']).inner_text()
 
-            # Store
-            job_details["url"] = page.url
-            job_details["description"] = description
-            await page.go_back()
+                    # Store
+                    job_details["description"] = description
+
+                await new_page.close()
+            
+            await page.wait_for_selector(selectors[site]['wait_for'], timeout=10000)
+            await page.locator(selectors[site]['job_elements']).nth(0).wait_for()
+
+        except Exception as e:
+            print(f"Error processing job: {e}")
 
         n += 1
         site_details.append(job_details)
@@ -116,13 +128,6 @@ async def scrape_site(site, browser):
         await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
         await page.screenshot(path=os.path.join(SCREENSHOTS_PATH, f"{re.sub(r'[\/:*?"<>|]', '_', site)}.png"))
 
-        '''if selectors[site]['filter_button'] != "":
-            if page.query_selector(selectors[site]['filter_button']):
-                page.click(selectors[site]['filter_button'])
-                page.wait_for_load_state("networkidle")
-            else:
-                print(f"Filter button not found for {site}, skipping")'''
-
         site_details = []
         while True:
             # Get job list elements
@@ -135,8 +140,8 @@ async def scrape_site(site, browser):
             # scrape page and then check for next page
             await scrape_page(page, job_elements, site, site_details)
 
-
             site_details = list({job['url']: job for job in site_details if job.get('url')}.values())
+            
             # Row Limit for Site
             if len(site_details) >= ROW_LIMIT:
                 print("Reached row limit")
