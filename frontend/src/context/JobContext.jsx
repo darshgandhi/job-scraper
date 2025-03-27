@@ -79,12 +79,14 @@ export const JobProvider = ({ children }) => {
             ?.toLowerCase()
             .includes(filters.location.toLowerCase());
         });
+        setCurrentPage(1);
       }
 
       if (filters.type && filters.type !== "all") {
         filtered = filtered.filter((job) => {
           return job.type.toLowerCase().includes(filters.type.toLowerCase());
         });
+        setCurrentPage(1);
       }
 
       setFilteredData(filtered);

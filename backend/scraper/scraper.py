@@ -39,19 +39,29 @@ async def scrape_page(page, job_elements, site, site_details):
                 title_element = await job.query_selector(selectors[site]['title_xpath'])
                 job_details["title"] = await title_element.inner_text() if title_element else None
                 title_text = await title_element.inner_text() if title_element else ""
-                if re.search(r"part[\s-]*time", title_text.lower()):
-                    job_details["type"] = "Part-Time"
-                elif "internship" in title_text.lower():
-                    job_details["type"] = "Internship"
-                elif "contract" in title_text.lower():
-                    job_details["type"] = "Contract"
-                else:
-                    job_details["type"] = "Full-Time"
-
-            # Job Type (Part-time, Full-time, etc.)
-            if selectors[site].get('type_xpath'):
-                type_element = await job.query_selector(selectors[site]['type_xpath'])
-                job_details["type"] = await type_element.inner_text() if type_element else None
+                if selectors[site].get('type_xpath'):
+                    type_element = await job.query_selector(selectors[site]['type_xpath'])
+                    if type_element:
+                        title_text = await type_element.inner_text()
+                        if re.search(r"part[\s-]*time", title_text.lower()):
+                            job_details["type"] = "Part-Time"
+                        elif "internship" in title_text.lower():
+                            job_details["type"] = "Internship"
+                        elif "contract" in title_text.lower():
+                            job_details["type"] = "Contract"
+                        else:
+                            job_details["type"] = "Full-Time"
+                    else:
+                        job_details["type"] = "Full-Time"
+                else:   
+                    if re.search(r"part[\s-]*time", title_text.lower()):
+                        job_details["type"] = "Part-Time"
+                    elif "internship" in title_text.lower():
+                        job_details["type"] = "Internship"
+                    elif "contract" in title_text.lower():
+                        job_details["type"] = "Contract"
+                    else:
+                        job_details["type"] = "Full-Time"
 
             # Location
             if selectors[site].get('location_xpath'):
@@ -100,6 +110,7 @@ async def scrape_page(page, job_elements, site, site_details):
 
                         # Store
                         job_details["description"] = description
+                        job_details['url'] = new_page.url
                     except Exception as e:
                         print("Error Loading Page")
                     finally:
@@ -162,7 +173,7 @@ async def scrape_site(site, browser):
             # scrape page and then check for next page
             await scrape_page(page, job_elements, site, site_details)
             site_details = list({job['url']: job for job in site_details if job.get('url')}.values())
-            
+            print(len(site_details))
             # Row Limit for Site
             if len(site_details) >= ROW_LIMIT:
                 print("Reached row limit")
