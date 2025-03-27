@@ -69,6 +69,7 @@ export const JobProvider = ({ children }) => {
             job.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             job.company_name?.toLowerCase().includes(searchTerm.toLowerCase())
         );
+        setCurrentPage(1);
       }
 
       if (filters.location) {
