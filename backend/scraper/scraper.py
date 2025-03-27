@@ -93,8 +93,6 @@ async def scrape_page(page, job_elements, site, site_details):
                             await job_url_element.click(button="middle")
 
                         new_page = await new_page_info.value
-
-                        print(await new_page.title())
                         
                         # Find the description
                         await new_page.locator(selectors[site]['description_xpath']).wait_for()
@@ -166,7 +164,6 @@ async def scrape_site(site, browser):
             site_details = list({job['url']: job for job in site_details if job.get('url')}.values())
             
             # Row Limit for Site
-            print(len(site_details))
             if len(site_details) >= ROW_LIMIT:
                 print("Reached row limit")
                 break

@@ -26,13 +26,28 @@ export const JobProvider = ({ children }) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase.from("jobs").select("*");
-        if (error) {
-          throw error;
+        let allData = [];
+        let from = 0;
+        while (true) {
+          const { data, error } = await supabase
+            .from("jobs")
+            .select("*")
+            .range(from, from + 999);
+
+          if (error) {
+            console.log(error);
+            break;
+          }
+
+          if (!data.length) break;
+
+          allData.push(...data);
+          from += 1000;
         }
-        data.sort(() => Math.random() - 0.5);
-        setData(data);
-        setFilteredData(data);
+        console.log(allData.length);
+        allData.sort(() => Math.random() - 0.5);
+        setData(allData);
+        setFilteredData(allData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
