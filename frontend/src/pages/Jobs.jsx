@@ -90,7 +90,7 @@ const Jobs = () => {
               <div className="w-12 h-12 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
             </div>
           ) : displayedJobs.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayedJobs.map((job) => (
                 <Item
                   key={job.id}

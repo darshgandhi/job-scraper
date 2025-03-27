@@ -6,7 +6,7 @@
     "title_xpath": "//a/div[@class='job-row__col job-row__col--primary']",
     "department_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][1]",
     "location_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][3]",
-    "url_xpath": "//a",
+    "url_xpath": "//li/a[contains(@class, 'job-row__inner js-job-url')]",
     "description_xpath": "//div[contains(@class, 'job-description')]//p[1]",
     "raw_url": "https://www.riotgames.com/en/work-with-us",
     "scrape_type": "tab-page"

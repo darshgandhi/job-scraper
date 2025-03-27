@@ -85,12 +85,8 @@ async def scrape_page(page, job_elements, site, site_details):
             # URL
             # Tab Page Type: Opens a new tab for each href url for the job type
             # In Page Type: Opens the job page in the same tab and goes back once scraped
-            if selectors[site].get('url_xpath') and selectors[site]['scrape_type'] == 'tab-page':
+            if selectors[site].get('url_xpath') and selectors[site].get('scrape_type') and selectors[site]['scrape_type'] == 'tab-page':
                 job_url_element = page.locator(selectors[site]['url_xpath']).nth(n)
-                #job_href = await job_url_element.get_attribute("href")
-                #job_url = selectors[site]['raw_url'] + job_href
-                #job_details["url"] = job_url
-
                 if job_url_element:
                     try:
                         async with page.context.expect_page() as new_page_info:
@@ -101,17 +97,16 @@ async def scrape_page(page, job_elements, site, site_details):
                         print(await new_page.title())
                         
                         # Find the description
-                        await new_page.locator(selectors[site]['description_xpath'], timeout=10000).wait_for()
+                        await new_page.locator(selectors[site]['description_xpath']).wait_for()
                         description = await new_page.locator(selectors[site]['description_xpath']).inner_text()
 
                         # Store
                         job_details["description"] = description
                     except Exception as e:
                         print("Error Loading Page")
-
                     finally:
                         await new_page.close()
-            elif selectors[site].get('url_xpath') and selectors[site]['scrape_type'] == 'in-page':
+            elif selectors[site].get('url_xpath') and selectors[site].get('scrape_type') and selectors[site]['scrape_type'] == 'in-page':
                     # Select job element url and click
                     temp_loc = page.locator(selectors[site]['url_xpath']).nth(n)
 
@@ -126,10 +121,14 @@ async def scrape_page(page, job_elements, site, site_details):
                     job_details["url"] = page.url
                     job_details["description"] = description
                     await page.go_back()
-            
-            await page.wait_for_selector(selectors[site]['wait_for'], timeout=10000)
-            await page.locator(selectors[site]['job_elements']).nth(0).wait_for()
-
+            elif selectors[site].get('url_xpath'):
+                job_url_element = await job.query_selector(selectors[site]['url_xpath'])
+                if job_url_element:
+                    job_href = await job_url_element.get_attribute("href")
+                    job_base_url = urlparse(site)
+                    job_url = job_base_url.scheme + "://" + job_base_url.netloc + job_href
+                    job_details["url"] = job_url
+                    
         except Exception as e:
             print(f"Error processing job: {e}")
 
@@ -164,10 +163,10 @@ async def scrape_site(site, browser):
 
             # scrape page and then check for next page
             await scrape_page(page, job_elements, site, site_details)
-
             site_details = list({job['url']: job for job in site_details if job.get('url')}.values())
             
             # Row Limit for Site
+            print(len(site_details))
             if len(site_details) >= ROW_LIMIT:
                 print("Reached row limit")
                 break
