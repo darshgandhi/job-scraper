@@ -8,7 +8,8 @@
     "location_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][3]",
     "url_xpath": "//a",
     "description_xpath": "//div[contains(@class, 'job-description')]//p[1]",
-    "raw_url": "https://www.riotgames.com/en/work-with-us"
+    "raw_url": "https://www.riotgames.com/en/work-with-us",
+    "scrape_type": "tab-page"
   },
   "https://careers.roblox.com/jobs": {
     "company_name": "Roblox Corporation",
@@ -17,10 +18,11 @@
     "title_xpath": "//h4",
     "department_xpath": "//div[@class='caption-container']/caption[2]",
     "location_xpath": "//div[@class='caption-container']/caption[1]",
-    "url_xpath": "//rbx-ui-link/a",
+    "url_xpath": "//rbx-ui-search-item/rbx-ui-link/a",
     "pagination_xpath": "//li[@class='pagination-next']",
     "description_xpath": "//rbx-ui-section[contains(@class,'job-description')]//rbx-ui-text-block",
-    "raw_url": "https://careers.roblox.com"
+    "raw_url": "https://careers.roblox.com",
+    "scrape_type": "in-page"
   },
 
   "https://www.google.com/about/careers/applications/jobs/results/?location=United%20States": {
@@ -32,7 +34,8 @@
     "location_xpath": "//div[@class='wVoYLb']//span[@class='r0wTof']",
     "url_xpath": "//a[@class='WpHeLc VfPpkd-mRLv6 VfPpkd-RLmnJb']",
     "pagination_xpath": "//a[contains(@aria-label, 'Go to next page')]",
-    "description_xpath": "//div[@class='aG5W3']"
+    "description_xpath": "//div[@class='aG5W3']",
+    "scrape_type": "in-page"
   },
 
   "https://www.jobbank.gc.ca/jobsearch/": {

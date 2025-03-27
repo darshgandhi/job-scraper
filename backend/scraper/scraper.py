@@ -83,20 +83,25 @@ async def scrape_page(page, job_elements, site, site_details):
                 job_details["salary"] = salary.replace('Salary: ', '') if salary else None
 
             # URL
-            if selectors[site].get('url_xpath'):
-                job_url_element = await job.query_selector(selectors[site]['url_xpath'])
-                job_href = await job_url_element.get_attribute("href")
-                job_url = selectors[site]['raw_url'] + job_href
-                job_details["url"] = job_url
+            # Tab Page Type: Opens a new tab for each href url for the job type
+            # In Page Type: Opens the job page in the same tab and goes back once scraped
+            if selectors[site].get('url_xpath') and selectors[site]['scrape_type'] == 'tab-page':
+                job_url_element = page.locator(selectors[site]['url_xpath']).nth(n)
+                #job_href = await job_url_element.get_attribute("href")
+                #job_url = selectors[site]['raw_url'] + job_href
+                #job_details["url"] = job_url
 
-                if job_url:
-                    new_page = await page.context.new_page()
-
+                if job_url_element:
                     try:
-                        await new_page.goto(job_url, wait_until="networkidle")
+                        async with page.context.expect_page() as new_page_info:
+                            await job_url_element.click(button="middle")
+
+                        new_page = await new_page_info.value
+
+                        print(await new_page.title())
                         
                         # Find the description
-                        await new_page.locator(selectors[site]['description_xpath'], timeout=1000).wait_for()
+                        await new_page.locator(selectors[site]['description_xpath'], timeout=10000).wait_for()
                         description = await new_page.locator(selectors[site]['description_xpath']).inner_text()
 
                         # Store
@@ -106,6 +111,21 @@ async def scrape_page(page, job_elements, site, site_details):
 
                     finally:
                         await new_page.close()
+            elif selectors[site].get('url_xpath') and selectors[site]['scrape_type'] == 'in-page':
+                    # Select job element url and click
+                    temp_loc = page.locator(selectors[site]['url_xpath']).nth(n)
+
+                    # Workaround, see https://github.com/microsoft/playwright/issues/21172
+                    await temp_loc.dispatch_event('click')
+
+                    # Find the description
+                    await page.locator(selectors[site]['description_xpath']).wait_for()
+                    description = await page.locator(selectors[site]['description_xpath']).inner_text()
+
+                    # Store
+                    job_details["url"] = page.url
+                    job_details["description"] = description
+                    await page.go_back()
             
             await page.wait_for_selector(selectors[site]['wait_for'], timeout=10000)
             await page.locator(selectors[site]['job_elements']).nth(0).wait_for()
