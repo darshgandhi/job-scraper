@@ -7,7 +7,8 @@
     "department_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][1]",
     "location_xpath": "//a/div[@class='job-row__col job-row__col--secondary'][3]",
     "url_xpath": "//a",
-    "description_xpath": "//div[contains(@class, 'job-description')]//p[1]"
+    "description_xpath": "//div[contains(@class, 'job-description')]//p[1]",
+    "raw_url": "https://www.riotgames.com/en/work-with-us"
   },
   "https://careers.roblox.com/jobs": {
     "company_name": "Roblox Corporation",
@@ -18,7 +19,8 @@
     "location_xpath": "//div[@class='caption-container']/caption[1]",
     "url_xpath": "//rbx-ui-link/a",
     "pagination_xpath": "//li[@class='pagination-next']",
-    "description_xpath": "//rbx-ui-section[contains(@class,'job-description')]//rbx-ui-text-block"
+    "description_xpath": "//rbx-ui-section[contains(@class,'job-description')]//rbx-ui-text-block",
+    "raw_url": "https://careers.roblox.com"
   },
 
   "https://www.google.com/about/careers/applications/jobs/results/?location=United%20States": {

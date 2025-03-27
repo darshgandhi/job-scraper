@@ -8,6 +8,7 @@ import os
 import re
 import time
 import json
+import time
 
 load_dotenv()
 supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
@@ -85,22 +86,26 @@ async def scrape_page(page, job_elements, site, site_details):
             if selectors[site].get('url_xpath'):
                 job_url_element = await job.query_selector(selectors[site]['url_xpath'])
                 job_href = await job_url_element.get_attribute("href")
-                job_base_url = urlparse(site)
-                job_url = job_base_url.scheme + "://" + job_base_url.netloc + job_href
+                job_url = selectors[site]['raw_url'] + job_href
                 job_details["url"] = job_url
 
                 if job_url:
                     new_page = await page.context.new_page()
-                    await new_page.goto(job_url, wait_until="domcontentloaded")
 
-                    # Find the description
-                    await new_page.locator(selectors[site]['description_xpath']).wait_for()
-                    description = await new_page.locator(selectors[site]['description_xpath']).inner_text()
+                    try:
+                        await new_page.goto(job_url, wait_until="networkidle")
+                        
+                        # Find the description
+                        await new_page.locator(selectors[site]['description_xpath'], timeout=1000).wait_for()
+                        description = await new_page.locator(selectors[site]['description_xpath']).inner_text()
 
-                    # Store
-                    job_details["description"] = description
+                        # Store
+                        job_details["description"] = description
+                    except Exception as e:
+                        print("Error Loading Page")
 
-                await new_page.close()
+                    finally:
+                        await new_page.close()
             
             await page.wait_for_selector(selectors[site]['wait_for'], timeout=10000)
             await page.locator(selectors[site]['job_elements']).nth(0).wait_for()
