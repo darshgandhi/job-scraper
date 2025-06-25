@@ -12,16 +12,16 @@ import time
 
 load_dotenv()
 supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
-SCREENSHOTS_PATH = "./screenshots"
 ROW_LIMIT = 500
 
-with open('./data/hosts.txt') as file:
+print(os.getcwd())
+
+with open('./backend/data/hosts.txt') as file:
     websites = list(filter(lambda line: not line.lstrip().startswith("*") and line.strip(), map(str.strip, file)))
 
-with open("./data/selectors.json", "r") as f:
+with open("./backend/data/selectors.json", "r") as f:
     selectors = json.load(f)
 
-os.makedirs(SCREENSHOTS_PATH, exist_ok=True)
 os.makedirs("./output", exist_ok=True)
 
 details = []
@@ -159,7 +159,6 @@ async def scrape_site(site, browser):
         await page.goto(site, wait_until="domcontentloaded")
 
         await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        await page.screenshot(path=os.path.join(SCREENSHOTS_PATH, f"{re.sub(r'[\/:*?"<>|]', '_', site)}.png"))
 
         site_details = []
         while True:
