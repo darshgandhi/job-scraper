@@ -1,0 +1,31 @@
+name: Weekly Scheduled Tasks
+
+on:
+  schedule:
+    - cron: "0 2 * * 0" # Every Sunday at 2 AM UTC
+  workflow_dispatch: # Manual run option
+
+jobs:
+  run-weekly-scripts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/scraper/requirements.txt
+          python -m playwright install  # Only needed if you're scraping with browsers
+
+      - name: Run Web Scraper
+        run: python backend/scraper/scraper.py
+
+      - name: Run DB Cleaner
+        run: python backend/scraper/removeOlder.py
